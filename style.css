@@ -87,3 +87,19 @@ body.scroll-deck{height:auto;overflow:visible;background:#e4e5e0}.scroll-deck .s
 .method-case .method-grid p{font-size:27px;line-height:1.6}
 .method-case .method-grid .method-output{font-size:25px;margin-top:10px}
 .method-takeaway{position:absolute;left:100px;right:100px;bottom:86px;padding-top:20px;border-top:2px solid var(--ppt-rule);font-size:28px;line-height:1.65;margin:0;color:#fff}
+
+/* Chapter labels and merged teaching notes use the existing lesson palette. */
+.course-detail{padding:70px 100px 170px}
+.course-detail h2{font-size:72px;margin-bottom:24px}
+.course-detail .lead{font-size:32px;line-height:1.6;margin-bottom:28px}
+.course-detail .matrix{font-size:31px;line-height:1.5;margin-top:28px}
+.course-detail .matrix th,.course-detail .matrix td{padding:20px 26px}
+.course-detail .flow{margin-top:72px;gap:38px}
+.course-detail .flow p{font-size:31px;line-height:1.85}
+.course-detail .compare{margin-top:28px;gap:70px}
+.course-detail .compare article{padding-top:20px}
+.course-detail .compare h3{font-size:45px;margin-bottom:24px}
+.course-detail .compare p{font-size:32px;line-height:1.9}
+.course-page .split figure{height:610px}
+.course-page .split img{max-height:610px}
+.course-page.ppt-palette .eyebrow{color:var(--ppt-yellow)}

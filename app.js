@@ -1,13 +1,13 @@
 (()=>{'use strict';
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let original=false,reading=false,idx=0;const KEY='ip-character-scroll-169-v5';
+let original=false,reading=false,idx=0;const KEY='ip-character-learning-v15';
 try{let saved=JSON.parse(localStorage.getItem(KEY)||'{}');idx=saved.idx||0;original=false}catch{}
 let deck=original?window.ORIGINAL:window.LESSON; if(location.hash.match(/^#\d+$/))idx=Number(location.hash.slice(1))-1;
 const initialIndex=idx;let starting=true;
 const article=(r,i)=>`<article><span class="num">${String(i+1).padStart(2,'0')}</span><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p></article>`;
-function render(s,i){let kind=s.kind;let c='',cls='',footer=`<div class="slide-footer"><span>IP角色设计 / ${esc(s.chapter)}</span><span>${String(i+1).padStart(2,'0')}</span></div>`;
-let head=`<div class="eyebrow">${esc(s.chapter)}</div><h2>${esc(s.title)}</h2>${s.lead?`<p class="lead">${esc(s.lead)}</p>`:''}`;
+function render(s,i){let kind=s.kind;let c='',cls='',footer=`<div class="slide-footer"><span>IP角色设计 / ${esc(s.courseChapter||s.chapter)}</span><span>${String(i+1).padStart(2,'0')}</span></div>`;
+let head=`<div class="eyebrow">${esc(s.courseChapter||s.chapter)}</div><h2>${esc(s.title)}</h2>${s.lead?`<p class="lead">${esc(s.lead)}</p>`:''}`;
 if(kind==='hero'){cls='hero dark';c=`<div class="heroText"><div class="eyebrow">第一节课 / IP设计</div><h1>${esc(s.title)}</h1><p class="lead">${esc(s.lead)}</p><div class="small">从角色内核到视觉表达<br>以《光年正传》为主要案例</div></div><figure><img src="${s.image}" alt="原课件中的光年正传海报"></figure>`}
 else if(kind==='chapter'){cls='chapter dark';c=head}
 else if(kind==='original'||kind==='gif'){cls='case';c=`<div class="imagezone"><img src="${s.image}" alt="${esc(s.title)}，原PPT第${s.original}页" data-enlarge="${s.image}"></div><div class="caseaside"><div class="eyebrow">${esc(s.chapter)}<br>原课件 ${s.original} / 50</div><h2>${esc(s.title)}</h2><p class="lead">${esc(s.lead)}</p><div class="question"><div class="label">观察与讨论</div>${esc(s.items[0]?.[0]||'')}</div><div class="subtle">点击图片放大<br>按 N 查看讲解备注<br>图像解读为课堂分析</div></div>`;footer=''}
@@ -22,9 +22,11 @@ else if(kind==='rubric'){c=head+s.items.map((r,j)=>`<div class="rubricRow"><stro
 else if(kind==='sources'){c=head+s.items.map(r=>`<div class="sourceRow"><strong>${esc(r[0])}</strong>${r[1].startsWith('https:')?`<a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[1])}</a>`:`<p>${esc(r[1])}</p>`}</div>`).join('')}
 else{let layout=kind==='flow'?'flow':kind==='compare'?'compare':'columns';cls=kind==='closing'?'closing':'';c=head+`<div class="${layout}">${s.items.map(article).join('')}</div>`}
 if(s.source)c+=`<a class="sourceLink" href="${s.source[1]}" target="_blank" rel="noopener">参考：${esc(s.source[0])}</a>`;
-if(s.afterOriginal&&!s.methodology)c=c.replace(`<div class="eyebrow">${esc(s.chapter)}</div>`,'');
+if(s.afterOriginal&&!s.methodology&&!s.showChapter)c=c.replace(`<div class="eyebrow">${esc(s.courseChapter||s.chapter)}</div>`,'');
 if(s.afterOriginal)cls+=' ppt-palette';
-if(s.methodology){cls+=` methodology method-${s.layout||kind}`;if(s.takeaway)c+=`<p class="method-takeaway">${esc(s.takeaway)}</p>`;}
+if(s.courseChapter)cls+=' course-page';
+if(s.methodology)cls+=` methodology method-${s.layout||kind}`;
+if(s.takeaway){if(!s.methodology)cls+=' course-detail';c+=`<p class="method-takeaway">${esc(s.takeaway)}</p>`;}
 return `<div class="slideframe"><section class="slide ${cls}" data-screen-label="${i+1} ${esc(s.title)}" data-slide="${i}">${c}${footer}</section></div>`;
 }
 
