@@ -1,32 +1,40 @@
-/* Progressive enhancements for the continuous-scroll teaching archive. */
-(() => {
-'use strict';
-if('scrollRestoration' in history)history.scrollRestoration='manual';
-// Local QA observations only; no telemetry is transmitted or persisted.
-if('PerformanceObserver' in window){let cls=0;for(const type of ['largest-contentful-paint','layout-shift','longtask']){try{new PerformanceObserver(list=>{for(const entry of list.getEntries()){if(type==='largest-contentful-paint')document.documentElement.dataset.lcpMs=String(Math.round(entry.startTime));else if(type==='layout-shift'&&!entry.hadRecentInput){cls+=entry.value;document.documentElement.dataset.cls=String(cls);}else if(type==='longtask')document.documentElement.dataset.maxTaskMs=String(Math.max(Number(document.documentElement.dataset.maxTaskMs||0),Math.round(entry.duration)));}}).observe({type,buffered:true});}catch{}}}
-const panels=[...document.querySelectorAll('.panel')],canvas=document.getElementById('canvas'),indexDialog=document.getElementById('lesson-index'),lightbox=document.getElementById('lightbox'),largeImage=document.getElementById('large-image'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
-let current=0,zoom=1,opener=null,starting=true,navigationLock=true,lastWidth=canvas.clientWidth,lastHeight=innerHeight,activeObserver;
-const fit=()=>{const scale=canvas.clientWidth/1920;canvas.style.setProperty('--scale',scale);canvas.style.setProperty('--tap-height',`${44/scale}px`);};fit();
-const select=index=>{current=index;document.getElementById('current-page').textContent=String(index+1).padStart(2,'0');document.getElementById('index-open').setAttribute('aria-label',`目录${String(index+1).padStart(2,'0')}，打开课堂目录`);document.getElementById('progress').style.transform=`scaleX(${(index+1)/panels.length})`;if(!starting)history.replaceState(null,'',`#${index+1}`);try{localStorage.setItem('ip-studio-page',String(index+1));}catch{}};
-function observeReading(){activeObserver?.disconnect();activeObserver=new IntersectionObserver(entries=>{if(navigationLock)return;const active=entries.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(active)select(Number(active.target.dataset.index));},{rootMargin:`-${Math.round(innerHeight*.12)}px 0px -${Math.round(innerHeight*.75)}px 0px`});if(!navigationLock)panels.forEach(p=>activeObserver.observe(p));}observeReading();
-const revealObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-entered');revealObserver.unobserve(e.target);}});},{threshold:.06});panels.filter(p=>p.classList.contains('native-panel')).forEach(p=>revealObserver.observe(p));
-function jump(page){navigationLock=true;activeObserver.disconnect();const panel=panels[Math.max(0,Math.min(panels.length-1,page-1))];fit();panel.scrollIntoView({behavior:'instant',block:'start'});select(Number(panel.dataset.index));requestAnimationFrame(()=>requestAnimationFrame(()=>{navigationLock=false;panels.forEach(p=>activeObserver.observe(p));}));}
-new ResizeObserver(()=>{const width=canvas.clientWidth;if(width===lastWidth)return;lastWidth=width;fit();observeReading();if(!starting)jump(current+1);}).observe(canvas);
-window.addEventListener('resize',()=>{if(innerHeight!==lastHeight){lastHeight=innerHeight;observeReading();}},{passive:true});
-function openDialog(dialog,button){opener=button;dialog.showModal();}
-[indexDialog,lightbox].forEach(dialog=>{dialog.addEventListener('close',()=>{if(opener?.isConnected)opener.focus({preventScroll:true});if(dialog===lightbox){largeImage.removeAttribute('src');largeImage.style.width='';}});dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});});
-const applyZoom=()=>{largeImage.style.width=zoom===1?'':`${zoom*100}%`;largeImage.classList.toggle('zoomed',zoom>1);document.getElementById('zoom-level').textContent=zoom===1?'适应窗口':`${Math.round(zoom*100)}%`;};
-document.addEventListener('click',event=>{
-const imageButton=event.target.closest('[data-image]');if(imageButton){largeImage.src=imageButton.dataset.image;largeImage.alt=imageButton.dataset.caption||'角色设计图像';document.getElementById('large-caption').textContent=largeImage.alt;document.getElementById('lightbox-title').textContent=largeImage.alt;zoom=1;applyZoom();openDialog(lightbox,imageButton);return;}
-const close=event.target.closest('[data-close]');if(close){document.getElementById(close.dataset.close).close();return;}
-const chapter=event.target.closest('[data-jump]');if(chapter){event.preventDefault();indexDialog.close();history.replaceState(null,'',chapter.hash);jump(Number(chapter.dataset.jump));return;}
-const anchor=event.target.closest('[data-anchor]');if(anchor){const body=anchor.closest('.anchor-body'),image=body.querySelector('.anchor-image');body.querySelectorAll('[data-anchor]').forEach(b=>b.setAttribute('aria-pressed',String(b===anchor)));image.dataset.active=anchor.dataset.anchor;return;}
-const test=event.target.closest('[data-test]');if(test){const body=test.closest('.test-body'),figure=body.querySelector('.test-image');if(test.dataset.test==='small'){test.setAttribute('aria-pressed',String(test.getAttribute('aria-pressed')!=='true'));figure.classList.toggle('is-small');}else{figure.classList.toggle('is-gray',test.dataset.test==='gray');body.querySelectorAll('[data-test]:not([data-test="small"])').forEach(b=>b.setAttribute('aria-pressed',String(b===test)));}body.querySelector('figcaption').textContent=`当前观察：${figure.classList.contains('is-gray')?'灰度':'原色'} · ${figure.classList.contains('is-small')?'缩小尺寸':'完整尺寸'}`;}
-});
-document.getElementById('index-open').addEventListener('click',e=>{openDialog(indexDialog,e.currentTarget);document.getElementById('lesson-search').focus();});
-const search=document.getElementById('lesson-search'),results=document.getElementById('search-results'),chapterList=document.getElementById('chapter-list');
-search.addEventListener('input',()=>{const term=search.value.trim().toLocaleLowerCase();results.replaceChildren();results.hidden=!term;chapterList.hidden=Boolean(term);if(!term)return;const matches=panels.filter(p=>p.getAttribute('aria-label').toLocaleLowerCase().includes(term));if(!matches.length){const empty=document.createElement('p');empty.className='search-empty';empty.textContent='未找到相关页，试试角色、轮廓或色彩。';results.append(empty);return;}matches.forEach(panel=>{const link=document.createElement('a'),number=document.createElement('span');link.href=`#${panel.id}`;link.dataset.jump=panel.id;number.textContent=String(Number(panel.id)).padStart(2,'0');link.append(number,document.createTextNode(panel.getAttribute('aria-label').replace(/^\d+ · /,'')));results.append(link);});});
-document.getElementById('zoom-in').addEventListener('click',()=>{zoom=Math.min(3,zoom+.5);applyZoom();});document.getElementById('zoom-out').addEventListener('click',()=>{zoom=Math.max(1,zoom-.5);applyZoom();});document.getElementById('zoom-reset').addEventListener('click',()=>{zoom=1;applyZoom();});
-window.addEventListener('hashchange',()=>{if(/^#\d+$/.test(location.hash))jump(Number(location.hash.slice(1)));});requestAnimationFrame(()=>{jump(/^#\d+$/.test(location.hash)?Number(location.hash.slice(1)):1);starting=false;});
-window.lessonDebug={get count(){return panels.length;},get index(){return current;},go:i=>jump(i+1)};
+(()=>{'use strict';
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let original=false,reading=false,idx=0;const KEY='ip-character-scroll-169-v5';
+try{let saved=JSON.parse(localStorage.getItem(KEY)||'{}');idx=saved.idx||0;original=false}catch{}
+let deck=original?window.ORIGINAL:window.LESSON; if(location.hash.match(/^#\d+$/))idx=Number(location.hash.slice(1))-1;
+const article=(r,i)=>`<article><span class="num">${String(i+1).padStart(2,'0')}</span><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p></article>`;
+function render(s,i){let kind=s.kind;let c='',cls='',footer=`<div class="slide-footer"><span>IP角色设计 / ${esc(s.chapter)}</span><span>${String(i+1).padStart(2,'0')}</span></div>`;
+let head=`<div class="eyebrow">${esc(s.chapter)}</div><h2>${esc(s.title)}</h2>${s.lead?`<p class="lead">${esc(s.lead)}</p>`:''}`;
+if(kind==='hero'){cls='hero dark';c=`<div class="heroText"><div class="eyebrow">第一节课 / IP设计</div><h1>${esc(s.title)}</h1><p class="lead">${esc(s.lead)}</p><div class="small">从角色内核到视觉表达<br>以《光年正传》为主要案例</div></div><figure><img src="${s.image}" alt="原课件中的光年正传海报"></figure>`}
+else if(kind==='chapter'){cls='chapter dark';c=head}
+else if(kind==='original'||kind==='gif'){cls='case';c=`<div class="imagezone"><img src="${s.image}" alt="${esc(s.title)}，原PPT第${s.original}页" data-enlarge="${s.image}"></div><div class="caseaside"><div class="eyebrow">${esc(s.chapter)}<br>原课件 ${s.original} / 50</div><h2>${esc(s.title)}</h2><p class="lead">${esc(s.lead)}</p><div class="question"><div class="label">观察与讨论</div>${esc(s.items[0]?.[0]||'')}</div><div class="subtle">点击图片放大<br>按 N 查看讲解备注<br>图像解读为课堂分析</div></div>`;footer=''}
+else if(kind==='raw'){cls='raw';c=`<img src="${s.image}" alt="${esc(s.title)}">${s.animation?`<button class="animationOpen" data-enlarge="${s.animation}">查看动态图</button>`:''}`;footer=''}
+else if(kind==='matrix'){c=head+`<table class="matrix"><thead><tr>${s.items[0].map(v=>`<th>${esc(v)}</th>`).join('')}</tr></thead><tbody>${s.items.slice(1).map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+else if(kind==='split'){c=head+`<div class="split"><figure><img src="${s.image}" alt="原课件角色设计参考" data-enlarge="${s.image}"></figure><div>${s.items.map((r,i)=>article(r,i).replace(/<span class="num">.*?<\/span>/,'')).join('')}</div></div>`}
+else if(kind==='prompt'){cls='prompt';c=head+`<blockquote>${esc(s.items[0][1])}</blockquote>`}
+else if(kind==='exercise'){cls='exercise';c=head+`<div class="exerciseRows">${s.items.map(article).join('')}</div>`}
+else if(kind==='compare3'){c=head+`<div class="testlayout"><div><div class="testimage"><img id="testImage-${i}" src="${s.image}" alt="用于灰度与缩小观察的角色设计图"></div><div class="testoptions"><button data-test="color" data-index="${i}">原色</button><button data-test="gray" data-index="${i}">灰度</button><button data-test="small" data-index="${i}">缩小 / 还原</button></div></div><div>${s.items.map((r,j)=>article(r,j).replace(/<span class="num">.*?<\/span>/,'')).join('')}</div></div>`}
+else if(kind==='rubric'){c=head+s.items.map((r,j)=>`<div class="rubricRow"><strong>${esc(r[0])}</strong><span>${esc(r[1])}</span><div>${[0,1,2].map(v=>`<button data-score="${v}" data-row="${j}" aria-label="${esc(r[0])}${v}分">${v}</button>`).join('')}</div></div>`).join('')+'<div class="score">已评 <span id="rated">0</span> / 5 项 · 合计 <span id="scoreTotal">0</span> / 10</div>'}
+else if(kind==='sources'){c=head+s.items.map(r=>`<div class="sourceRow"><strong>${esc(r[0])}</strong>${r[1].startsWith('https:')?`<a href="${esc(r[1])}" target="_blank" rel="noopener">${esc(r[1])}</a>`:`<p>${esc(r[1])}</p>`}</div>`).join('')}
+else{let layout=kind==='flow'?'flow':kind==='compare'?'compare':'columns';cls=kind==='closing'?'closing':'';c=head+`<div class="${layout}">${s.items.map(article).join('')}</div>`}
+if(s.source)c+=`<a class="sourceLink" href="${s.source[1]}" target="_blank" rel="noopener">参考：${esc(s.source[0])}</a>`;
+if(s.afterOriginal)c=c.replace(`<div class="eyebrow">${esc(s.chapter)}</div>`,'');
+if(s.afterOriginal)cls+=' ppt-palette';
+return `<div class="slideframe"><section class="slide ${cls}" data-screen-label="${i+1} ${esc(s.title)}" data-slide="${i}">${c}${footer}</section></div>`;
+}
+
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify({idx}))}catch{}}
+function update(to){idx=Math.max(0,Math.min(deck.length-1,to));history.replaceState(null,'',`#${idx+1}`);save()}
+function go(to){update(to);const el=$('canvas').children[idx];if(el)window.scrollTo({top:el.getBoundingClientRect().top+scrollY,behavior:'instant'})}
+function fit(){$('canvas').style.setProperty('--slide-scale',$('canvas').clientWidth/1920)}
+function mount(){$('canvas').innerHTML=deck.map(render).join('');fit()}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.dataset.close)$(b.dataset.close).close();if(e.target.dataset.enlarge){$('largeImage').src=e.target.dataset.enlarge;$('lightbox').showModal()}
+if(b?.dataset.test){const im=$('testImage-'+b.dataset.index);if(b.dataset.test==='color')im.style.filter='none';if(b.dataset.test==='gray')im.style.filter='grayscale(1)';if(b.dataset.test==='small'){im.dataset.small=im.dataset.small==='yes'?'no':'yes';im.style.transform=im.dataset.small==='yes'?'scale(.24)':'scale(1)'}}});
+let pending=false;function track(){pending=false;const slides=[...$('canvas').children];let active=0;for(let i=0;i<slides.length;i++){if(slides[i].getBoundingClientRect().top<=50)active=i;else break}if(active!==idx)update(active);const max=document.documentElement.scrollHeight-innerHeight;$('progress').style.width=`${max>0?Math.min(100,scrollY/max*100):100}%`}
+window.addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(track)}},{passive:true});window.addEventListener('resize',()=>{fit();track()});
+window.addEventListener('hashchange',()=>{if(/^#\d+$/.test(location.hash))go(Number(location.hash.slice(1))-1)});
+window.lessonDebug={go,get count(){return deck.length},get index(){return idx},get original(){return false}};
+mount();requestAnimationFrame(()=>go(idx));
 })();
