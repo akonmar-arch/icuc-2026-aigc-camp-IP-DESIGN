@@ -1,4 +1,4 @@
-/* 本课归纳的 IP 角色设计方法；追加在原有79页之后。 */
+/* 本课归纳的 IP 角色设计方法；追加在前78页之后。 */
 window.LESSON.push(...[
   {
     title:'IP设计方法论：六步形成闭环', kind:'method-grid', layout:'route',
@@ -153,4 +153,4 @@ window.LESSON.push(...[
     ],
     takeaway:'用角色内核解释行为，用视觉锚点建立记忆，用实际应用检验设计。文化事实与课堂虚构保持明确区分。'
   }
-].map(page=>({...page,methodology:true,afterOriginal:50})));
+].map(page=>({...page,methodology:true,afterOriginal:49})));
