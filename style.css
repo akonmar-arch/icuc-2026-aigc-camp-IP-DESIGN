@@ -48,3 +48,42 @@ body.scroll-deck{height:auto;overflow:visible;background:#e4e5e0}.scroll-deck .s
 .ppt-palette .slide-footer{color:rgba(255,255,255,.85)}
 .ppt-palette .sourceLink{color:#fffd6d}
 .progress i{background:#ffd83a}
+
+/* Closing methodology pages reuse the restored PPT palette and teaching scale. */
+.methodology{padding:70px 100px 170px}
+.methodology .eyebrow{color:var(--ppt-yellow);font-size:24px;margin-bottom:20px}
+.methodology h2{font-size:72px;margin-bottom:24px}
+.methodology .lead{font-size:32px;line-height:1.6;margin-bottom:28px}
+.methodology .matrix{font-size:31px;line-height:1.5;margin-top:28px}
+.methodology .matrix th,.methodology .matrix td{padding:20px 26px}
+.methodology .matrix td:first-child{width:25%}
+.methodology .columns{gap:64px;padding-top:22px}
+.methodology .columns h3{font-size:43px}
+.methodology .columns p{font-size:34px;line-height:1.85}
+.methodology .columns .num{margin-bottom:22px}
+.methodology .flow{margin-top:72px;gap:38px}
+.methodology .flow p{font-size:31px;line-height:1.85}
+.methodology .flow h3{font-size:42px}
+.methodology .compare{margin-top:28px;gap:70px}
+.methodology .compare article{padding-top:20px}
+.methodology .compare article+article{padding-left:50px}
+.methodology .compare .num{margin-bottom:20px}
+.methodology .compare h3{font-size:45px;margin-bottom:24px}
+.methodology .compare p{font-size:32px;line-height:1.9}
+.method-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 54px;margin-top:42px}
+.method-grid article{border-top:2px solid var(--ppt-rule);padding-top:22px}
+.method-grid .num{font-size:27px;margin-bottom:12px}
+.method-grid h3{font-size:40px;margin-bottom:16px}
+.method-grid p{font-size:30px;line-height:1.6;margin:0}
+.method-grid .method-output{margin-top:14px;font-size:27px;line-height:1.6}
+.method-output strong{font-weight:400;color:var(--ppt-yellow)}
+.method-canvas .method-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:42px 48px;margin-top:42px}
+.method-canvas .method-grid h3{font-size:36px}
+.method-canvas .method-grid p{font-size:29px;line-height:1.9}
+.method-case .method-grid{gap:32px 52px;margin-top:28px}
+.method-case .method-grid article{padding-top:18px}
+.method-case .method-grid .num{font-size:24px;margin-bottom:8px}
+.method-case .method-grid h3{font-size:38px;margin-bottom:10px}
+.method-case .method-grid p{font-size:27px;line-height:1.6}
+.method-case .method-grid .method-output{font-size:25px;margin-top:10px}
+.method-takeaway{position:absolute;left:100px;right:100px;bottom:86px;padding-top:20px;border-top:2px solid var(--ppt-rule);font-size:28px;line-height:1.65;margin:0;color:#fff}
