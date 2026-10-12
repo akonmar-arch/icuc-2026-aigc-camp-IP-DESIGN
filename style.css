@@ -103,3 +103,19 @@ body.scroll-deck{height:auto;overflow:visible;background:#e4e5e0}.scroll-deck .s
 .course-page .split figure{height:610px}
 .course-page .split img{max-height:610px}
 .course-page.ppt-palette .eyebrow{color:var(--ppt-yellow)}
+
+/* Classroom prompts reuse each fixed canvas; opening a hint never moves anchors. */
+.practice-page .lead{font-size:32px;line-height:1.6;margin-bottom:28px}
+.practice-page .matrix{font-size:28px;line-height:1.5;margin-top:28px}
+.practice-page .matrix th,.practice-page .matrix td{padding:17px 24px}
+.has-reveal .method-takeaway{bottom:148px}
+.lesson-reveal{position:absolute;left:100px;right:100px;bottom:80px;z-index:3;border:1px solid var(--ppt-rule);background:#172b54;color:#fff;font-size:25px;line-height:1.65;max-height:480px;overflow:auto}
+.lesson-reveal summary{padding:12px 24px;cursor:pointer;color:var(--ppt-yellow);font-weight:700}
+.lesson-reveal summary:focus-visible{outline:3px solid #ffd83a;outline-offset:-4px}
+.lesson-reveal p{font-size:27px;line-height:1.7;margin:0;padding:10px 24px 24px}
+.lesson-reveal[open]{box-shadow:0 10px 34px #08112b66}
+.lesson-links{position:absolute;left:100px;right:100px;bottom:80px;font-size:26px;line-height:1.6}
+.lesson-links a{display:inline-block;padding:8px 0;color:var(--ppt-yellow);text-underline-offset:5px}
+.has-lesson-links.has-reveal .lesson-reveal{bottom:148px}
+.has-lesson-links.has-reveal .method-takeaway{bottom:216px}
+@media print{.lesson-reveal,.lesson-links{display:none!important}}

@@ -20,9 +20,26 @@ IP角色设计课程网页，采用满宽16:9画面、连续向下滚动阅读�
 
 ## 访问
 
-[完整课程](https://akonmar-arch.github.io/icuc-2026-aigc-camp-IP-DESIGN/?v=17#1)
+[完整课程](https://akonmar-arch.github.io/icuc-2026-aigc-camp-IP-DESIGN/?v=18#1)
 
-[方法论与实践工具](https://akonmar-arch.github.io/icuc-2026-aigc-camp-IP-DESIGN/?v=17#84)
+[方法论与实践工具](https://akonmar-arch.github.io/icuc-2026-aigc-camp-IP-DESIGN/?v=18#84)
+
+## 2026-10-12 角色设计课堂调整
+
+保留88页及原数字锚点、48张原课件页面、全部原图路径与奶奶独立流程，仅完善现有教学段：
+
+- 第13、15页：人物内核落到可见选择；先独立判断，再展开教师提示。
+- 第17页：参考中的身份与个体、装饰与经历、呈现条件分开观察。
+- 第32、38页：记录实际识别结果；候选先立标准、作选择、说代价，再与案例解释核对。
+- 第83—86页：母版与修改范围、六步主线、两轮验证及返回修改记录。
+- 第87页：原有头像、全身、三视图、10表情、4姿势、2套服装及流程对应能力证据。
+- 第88页：先回答同一简报，再展开虚构示范；衔接[下册角色作业](https://akonmar-arch.github.io/icuc-2026-aigc-camp-IP-DESIGN-pt2/#character-homework)。
+
+不增加原作业件数，也不增加一套100分评分。重点从已有资料中抽取3种表情意图、1处结构、1次受控修改说明。第一轮先稳定标准角色再批量扩展；第二轮连同既有应用检查复查。原有跨媒介、声音与制作说明保留，本轮新增内容限于角色设计。
+
+第15、38、88页用原生details折叠教师提示；打开提示不改变画布高度或旧数字锚点。缓存标记统一为v18。
+
+本地检查：`node --check content.js`、`node --check methodology.js`、`node --check app.js`，以及 `node check-role-course.cjs`。后者核对88页、原图/原稿数据与传统流程不变，并检查课堂提示及下册链接的实际渲染结果；浏览器视觉与交互仍需独立验证。
 
 ## 发布
 

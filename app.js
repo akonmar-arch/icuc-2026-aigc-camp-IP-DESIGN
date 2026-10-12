@@ -27,6 +27,9 @@ if(s.afterOriginal)cls+=' ppt-palette';
 if(s.courseChapter)cls+=' course-page';
 if(s.methodology)cls+=` methodology method-${s.layout||kind}`;
 if(s.takeaway){if(!s.methodology)cls+=' course-detail';c+=`<p class="method-takeaway">${esc(s.takeaway)}</p>`;}
+if(s.practice)cls+=' practice-page';
+if(s.reveal){cls+=' has-reveal';c+=`<details class="lesson-reveal"><summary>${esc(s.reveal.label)}</summary><p>${esc(s.reveal.text)}</p></details>`;}
+if(s.lessonLinks?.length){cls+=' has-lesson-links';c+=`<nav class="lesson-links" aria-label="课程衔接">${s.lessonLinks.map(link=>`<a href="${esc(link.href)}">${esc(link.label)}</a>`).join('')}</nav>`;}
 return `<div class="slideframe"><section class="slide ${cls}" data-screen-label="${i+1} ${esc(s.title)}" data-slide="${i}">${c}${footer}</section></div>`;
 }
 
