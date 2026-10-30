@@ -119,3 +119,15 @@ body.scroll-deck{height:auto;overflow:visible;background:#e4e5e0}.scroll-deck .s
 .has-lesson-links.has-reveal .lesson-reveal{bottom:148px}
 .has-lesson-links.has-reveal .method-takeaway{bottom:216px}
 @media print{.lesson-reveal,.lesson-links{display:none!important}}
+
+/* Final homework page keeps observation prompts and submission details together. */
+.method-homework{padding:60px 100px 180px}
+.method-homework .eyebrow{margin-bottom:16px}
+.method-homework h2{font-size:72px;margin-bottom:20px}
+.method-homework .lead{max-width:1720px;font-size:32px;line-height:1.6;margin-bottom:22px}
+.method-homework .method-grid{margin-top:26px;gap:26px 48px}
+.method-homework .method-grid article{padding-top:18px}
+.method-homework .num{display:none}
+.method-homework .method-grid h3{font-size:36px;line-height:1.4;margin-bottom:12px}
+.method-homework .method-grid p{font-size:30px;line-height:1.5}
+.method-homework .method-takeaway{font-size:30px;line-height:1.5;bottom:82px}
