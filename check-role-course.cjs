@@ -6,19 +6,22 @@ const { createHash } = require('node:crypto');
 const read = name => fs.readFileSync(path.join(__dirname, name), 'utf8');
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const changedPages = [13, 15, 17, 32, 38];
-// Original artwork: b513c19. Retained pages 1–81: 364b7dd.
+// Original artwork: b513c19. Page 38 teacher notes removed on 2026-10-31.
 const expected = {
   original: '1ad3280cf8945c2363693a1bb9c837069b32a562e8c9afecee40d9d816b9b8a7',
   raw: '1ad3280cf8945c2363693a1bb9c837069b32a562e8c9afecee40d9d816b9b8a7',
   assets: 'fcef906255d345f580469cc581c78c873517326b34fa19f8cf41d5ad2cc470b9',
   grandmother: 'b462b99eb88c107efb8a30fc29ca9012ba9e6cbe6af199d6e58bac4d1897bdd5',
-  retained: '10b23d67757af1a511d4ba2aefce38c91e895562874c6c5519290ccf697c6a72'
+  retained: '5f9b948e2c738c63949b6736778400443181921e1d728ae12577dbf630bf6423'
 };
 const window = { addEventListener() {}, scrollTo() {} };
 vm.runInNewContext(read('content.js'), { window });
 const deck = window.LESSON;
-assert.equal(hash(deck.slice(0, 82)), '984f5a5c1eaeed981ff8d5a4340998c3b1776e6ad88a82010894494abfc6e140', 'Existing course or video changed');
+assert.equal(hash(deck.slice(0, 82)), '117230b238a8d9ebcc047971ca80ab7972b3604376baabab1a2009f5aca52fd6', 'Existing course or video changed');
 assert.equal(deck.length, 83);
+assert.equal(hash(deck.filter((s, i) => i !== 37)), 'a1fde02c34d91ea423b3b8274287e637ba44b5d1e3c76a258a0f211d43be665f', 'Another lesson changed');
+assert.ok(!deck[37].takeaway && !deck[37].reveal);
+assert.ok(!deck[37].lead.includes('教师提示'));
 assert.equal(deck[0].original, 1, 'Opening must pose the question');
 assert.equal(deck[1].original, 2, 'The next page must answer the definition');
 assert.deepEqual(Array.from(deck.slice(2, 6), s => s.title), ['角色、形象与IP', '课程结构：理论、案例与传统流程', '先确定为谁、为什么设计', '开始画之前：设计简报']);
@@ -51,7 +54,7 @@ vm.runInNewContext(read('app.js'), {
 });
 const html = elements.canvas.innerHTML;
 assert.equal((html.match(/class="slideframe"/g) || []).length, 83);
-assert.equal((html.match(/<details class="lesson-reveal">/g) || []).length, 2);
+assert.equal((html.match(/<details class="lesson-reveal">/g) || []).length, 1);
 assert.ok(!html.includes('data-slide="83"'), 'Removed pages still render');
 assert.ok(html.includes('至少 3 个'));
 assert.ok(html.includes('DOC / DOCX'));
@@ -61,5 +64,5 @@ assert.match(html, /controls playsinline preload="none"/);
 assert.ok(!html.includes('autoplay'));
 assert.ok(!read('index.html').includes('methodology.js'), 'Removed append script is still loaded');
 for (const page of changedPages) assert.ok(html.includes(`data-slide="${page - 1}"`));
-for (const name of ['style.css', 'content.js', 'app.js']) assert.ok(read('index.html').includes(`${name}?v=23`));
-console.log(JSON.stringify({ result: 'PASS', pages: 83, rawPages: 48, changedPages, teacherPrompts: 2, originalAssetsAndGrandmotherFlow: 'UNCHANGED', lastPage: deck.at(-1).title, retainedPages: 'UNCHANGED', cacheVersion: 23 }, null, 2));
+for (const name of ['style.css', 'content.js', 'app.js']) assert.ok(read('index.html').includes(`${name}?v=24`));
+console.log(JSON.stringify({ result: 'PASS', pages: 83, rawPages: 48, changedPages, teacherPrompts: 1, originalAssetsAndGrandmotherFlow: 'UNCHANGED', lastPage: deck.at(-1).title, retainedPages: 'UNCHANGED', cacheVersion: 24 }, null, 2));
